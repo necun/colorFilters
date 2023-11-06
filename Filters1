@@ -1,0 +1,50 @@
+import cv2
+import numpy as np
+
+def apply_sharp_black_filter(image_path):
+    img = cv2.imread(image_path)
+    kernel = np.array([[-1,-1,-1],
+                       [-1, 9,-1],
+                       [-1,-1,-1]])
+    
+    sharpened = cv2.filter2D(img, -1, kernel)
+
+def apply_vibrant_filter(image_path, saturation_factor=2.0, brightness_factor=1.2):
+    img = cv2.imread(image_path)
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    hsv[:, :, 1] = np.clip(hsv[:, :, 1] * saturation_factor, 0, 255)
+    hsv[:, :, 2] = np.clip(hsv[:, :, 2] * brightness_factor, 0, 255)
+    vibrant_image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+    
+def apply_soft_tone_filter(image_path, gamma=1.5):
+    img = cv2.imread(image_path)
+    soft_tone_image = np.power(img / 255.0, gamma) * 255.0
+    soft_tone_image = soft_tone_image.astype(np.uint8)
+
+def apply_black_pop_filter(image_path, brightness_factor=1.2, contrast_factor=1.2):
+    
+    img = cv2.imread(image_path)
+    img = cv2.convertScaleAbs(img, alpha=contrast_factor, beta=brightness_factor)
+    
+def apply_sepia_filter(image_path):
+    
+    img = cv2.imread(image_path)
+    sepia_filter = np.array([[0.272, 0.534, 0.131],
+                            [0.349, 0.686, 0.168],
+                            [0.393, 0.769, 0.189]])
+    sepia_image = cv2.transform(img, sepia_filter)
+    sepia_image = np.clip(sepia_image, 0, 255).astype(np.uint8)
+    
+def grayscale(input_image_path):
+    
+    color_image = cv2.imread(image_path)
+    grayscale_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
+
+if __name__ == "__main__":
+    image_path = "C:/Users/DELL/Downloads/o2.jpg"
+    apply_sharp_black_filter(image_path)
+    apply_vibrant_filter(image_path)
+    apply_soft_tone_filter(image_path)
+    apply_black_pop_filter(image_path, brightness_factor=1.2, contrast_factor=1.2)
+    apply_sepia_filter(image_path)
+    grayscale(image_path)
