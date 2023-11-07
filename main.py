@@ -40,7 +40,7 @@ def apply_sepia_filter(image_path):
     sepia_image = np.clip(sepia_image, 0, 255).astype(np.uint8)
     return sepia_image
 
-def grayscale(input_image_path):
+def grayscale(image_path):
     color_image = cv2.imread(image_path)
     grayscale_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
     return grayscale_image
