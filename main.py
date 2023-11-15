@@ -20,16 +20,19 @@ def apply_vibrant_filter(image_path, saturation_factor=2.0, brightness_factor=1.
     vibrant_image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
     return vibrant_image
 
+
 def apply_soft_tone_filter(image_path, gamma=1.5):
     img = cv2.imread(image_path)
     soft_tone_image = np.power(img / 255.0, gamma) * 255.0
     soft_tone_image = soft_tone_image.astype(np.uint8)
     return soft_tone_image
 
+
 def apply_black_pop_filter(image_path, brightness_factor=1.2, contrast_factor=1.2):
     img = cv2.imread(image_path)
     img = cv2.convertScaleAbs(img, alpha=contrast_factor, beta=brightness_factor)
     return img
+
 
 def apply_sepia_filter(image_path):
     img = cv2.imread(image_path)
@@ -40,13 +43,15 @@ def apply_sepia_filter(image_path):
     sepia_image = np.clip(sepia_image, 0, 255).astype(np.uint8)
     return sepia_image
 
+
 def grayscale(image_path):
     color_image = cv2.imread(image_path)
     grayscale_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
     return grayscale_image
 
+
 if __name__ == "__main__":
-    image_path = "C:/Users/DELL/Downloads/o2.jpg"
+    image_path = "Original Image Before applying filters.jpg"
     apply_sharp_black_filter(image_path)
     apply_vibrant_filter(image_path)
     apply_soft_tone_filter(image_path)
