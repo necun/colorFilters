@@ -16,10 +16,13 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 
 def apply_sharp_black_filter(image_path):
+    print(image_path)
     img = cv2.imread(image_path)
+    print('9090')
     kernel = np.array([[-1, -1, -1],
                        [-1, 9, -1],
                        [-1, -1, -1]])
+
 
     sharpened = cv2.filter2D(img, -1, kernel)
     return sharpened
@@ -60,8 +63,7 @@ def grayscale(image_path):
 @app.get("/")
 def root():
     return {"message": "Welcome to the image processing API!"}
-
-@app.post("/upload/")
+@app.post("/uploadAndProcess/{filter_name}")
 # async def upload_image(file: UploadFile):
 #     # Save the uploaded file
 #     # with open("C:/Users/DELL/OneDrive/Desktop/", "wb") as image_file:
@@ -69,79 +71,45 @@ def root():
 #     img = file.file.read()
 #     img = Image.open(img)
 #     # return {"filename": file.filename}
-async def upload_image(file: UploadFile = File(...)):
+async def upload_image(filter_name: str, file: UploadFile = File(...)):
     try:
         image = Image.open(io.BytesIO(await file.read()))
         # Save the uploaded file
         upload_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        print(file.filename)
         image.save(upload_path)
-        return {"message": "Upload successful", "filename": file.filename}
-    except Exception as e:
-        return {"error": str(e)}
-
-# @app.get("/sharp_black_filter")
-# def sharp_black_filter(image_path: str):
-#     processed_image = apply_sharp_black_filter("uploaded_image.jpg")
-#     cv2.imwrite("C:/Users/DELL/Downloads/processed_image.jpg", processed_image)
-#     return FileResponse("processed_image.jpg")
-#
-# @app.get("/vibrant_filter")
-# def vibrant_filter(image_path: str):
-#     processed_image = apply_vibrant_filter("uploaded_image.jpg")
-#     cv2.imwrite("C:/Users/DELL/Downloads/processed_image.jpg", processed_image)
-#     return FileResponse("processed_image.jpg")
-#
-# @app.get("/soft_tone_filter")
-# def soft_tone_filter(image_path: str):
-#     processed_image = apply_soft_tone_filter("uploaded_image.jpg")
-#     cv2.imwrite("C:/Users/DELL/Downloads/processed_image.jpg", processed_image)
-#     return FileResponse("processed_image.jpg")
-#
-# @app.get("/black_pop_filter")
-# def black_pop_filter(image_path: str):
-#     processed_image = apply_black_pop_filter("uploaded_image.jpg")
-#     cv2.imwrite("C:/Users/DELL/Downloads/processed_image.jpg", processed_image)
-#     return FileResponse("processed_image.jpg")
-#
-# @app.get("/sepia_filter")
-# def sepia_filter(image_path: str):
-#     processed_image = apply_sepia_filter("uploaded_image.jpg")
-#     cv2.imwrite("C:/Users/DELL/Downloads/processed_image.jpg", processed_image)
-#     return FileResponse("processed_image.jpg")
-#
-# @app.get("/grayscale")
-# def grayscale(image_path: str):
-#     processed_image = grayscale("uploaded_image.jpg")
-#     cv2.imwrite("C:/Users/DELL/Downloads/processed_image.jpg", processed_image)
-#     return FileResponse("processed_image.jpg")
-@app.get("/process/{filter_name}")
-async def process_image(filter_name: str, filename: str):
-    try:
-        # Load the uploaded image
-        upload_path = os.path.join(UPLOAD_FOLDER, filename)
         image = Image.open(upload_path)
-
+        print(image)
+        # processImage(filter_name,upload_path)
         # Apply the selected filter
         if filter_name == "sharp_black":
-            processed_image = apply_sharp_black_filter(image)
+            processed_image = (apply_sharp_black_filter(upload_path))
         elif filter_name == "vibrant":
-            processed_image = apply_vibrant_filter(image)
+            processed_image = (apply_vibrant_filter(upload_path))
+
         elif filter_name == "soft_tone":
-            processed_image = apply_soft_tone_filter(image)
+            processed_image = (apply_soft_tone_filter(upload_path))
         elif filter_name == "black_pop":
-            processed_image = apply_black_pop_filter(image)
+            processed_image = (apply_black_pop_filter(upload_path))
         elif filter_name == "sepia":
-            processed_image = apply_sepia_filter(image)
+            processed_image = (apply_sepia_filter(upload_path))
         elif filter_name == "grayscale":
-            processed_image = grayscale(image)
+            processed_image = (grayscale(upload_path))
         else:
             return {"error": "Invalid filter name"}
 
         # Save the processed image
-        processed_filename = f"{filter_name}_{filename}"
+        processed_filename = f"{filter_name}_{file.filename}"
         processed_path = os.path.join(PROCESSED_FOLDER, processed_filename)
-        processed_image.save(processed_path)
-
-        return FileResponse(processed_path, media_type="image/jpeg", headers={"Content-Disposition": f"attachment; filename={processed_filename}"})
+        print('hi')
+        print(processed_image)
+        processed_image = cv2.cvtColor(processed_image, cv2.COLOR_BGR2RGB)
+        print(processed_path)
+        print('bye')
+        # processed_image.save(processed_path)
+        cv2.imwrite(processed_path,processed_image)
+        return {"message": "Upload successful", "filename": file.filename}
     except Exception as e:
         return {"error": str(e)}
+
+
