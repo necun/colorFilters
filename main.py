@@ -49,6 +49,14 @@ def grayscale(image_path):
     grayscale_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
     return grayscale_image
 
+def apply_contrast_adjustment(image_path):
+    img = cv2.imread(image_path)
+    adjust = 50
+    adjust = max(adjust, -100)
+    contrast_factor = np.power((adjust + 100) / 100, 2)
+    img = ((img / 255 - 0.5) * contrast_factor + 0.5) * 255
+    img = np.clip(img, 0, 255).astype(np.uint8)
+    return img
 
 if __name__ == "__main__":
     image_path = "Original Image Before applying filters.jpg"
@@ -58,3 +66,4 @@ if __name__ == "__main__":
     apply_black_pop_filter(image_path, brightness_factor=1.2, contrast_factor=1.2)
     apply_sepia_filter(image_path)
     grayscale(image_path)
+    apply_contrast_adjustment(image_path)
