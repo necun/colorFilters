@@ -10,16 +10,7 @@ def apply_sharp_black_filter(image_path):
 
     sharpened = cv2.filter2D(img, -1, kernel)
     return sharpened
-
-
-def apply_vibrant_filter(image_path, saturation_factor=2.0, brightness_factor=1.2):
-    img = cv2.imread(image_path)
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    hsv[:, :, 1] = np.clip(hsv[:, :, 1] * saturation_factor, 0, 255)
-    hsv[:, :, 2] = np.clip(hsv[:, :, 2] * brightness_factor, 0, 255)
-    vibrant_image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-    return vibrant_image
-
+    
 
 def apply_soft_tone_filter(image_path, gamma=1.5):
     img = cv2.imread(image_path)
@@ -58,12 +49,44 @@ def apply_contrast_adjustment(image_path):
     img = np.clip(img, 0, 255).astype(np.uint8)
     return img
 
+def apply_brightness_adjustment(image_path):
+    img = cv2.imread(image_path)
+    adjust=50
+    adjust = max(adjust, -100)
+    img = cv2.convertScaleAbs(img, alpha=1, beta=adjust)
+    img = np.clip(img, 0, 255).astype(np.uint8)
+    return img
+
+def adjust_hue(image_path):
+    original_image = cv2.imread(image_path)
+    adjust = 30
+    hsv_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2HSV)
+    hsv_image[:, :, 0] = (hsv_image[:, :, 0] + adjust) % 180
+    adjusted_image = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+    return adjusted_image
+
+def adjust_saturation(image_path):
+    original_image = cv2.imread(image_path)
+    adjust = 20
+    adjust_factor = adjust * -0.01
+    rgb_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+    max_array = np.max(rgb_image, axis=-1, keepdims=True)
+    sat_array = np.where(
+        rgb_image != max_array,
+        rgb_image + (max_array - rgb_image) * adjust_factor,
+        rgb_image,
+    )
+    adjusted_image = cv2.cvtColor(sat_array.astype(np.uint8), cv2.COLOR_RGB2BGR)
+    return adjusted_image
+    
 if __name__ == "__main__":
     image_path = "Original Image Before applying filters.jpg"
     apply_sharp_black_filter(image_path)
-    apply_vibrant_filter(image_path)
     apply_soft_tone_filter(image_path)
     apply_black_pop_filter(image_path, brightness_factor=1.2, contrast_factor=1.2)
     apply_sepia_filter(image_path)
     grayscale(image_path)
     apply_contrast_adjustment(image_path)
+    apply_brightness_adjustment(image_path)
+    adjust_hue(image_path)
+    adjust_saturation(image_path)
