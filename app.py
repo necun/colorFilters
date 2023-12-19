@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 from fastapi import FastAPI
 import random
@@ -125,13 +125,13 @@ async def upload_image(filter_name: str, file: UploadFile = File(...)):
         elif filter_name == "grayscale":
             processed_image = (grayscale(upload_path))
         elif filter_name == "contrast":
-            processed_image = (apply_contrast_adjustment(image_path))    
+            processed_image = (apply_contrast_adjustment(upload_path))    
         elif filter_name == "bright":
-            processed_image = (apply_brightness_adjustment(image_path))
+            processed_image = (apply_brightness_adjustment(upload_path))
         elif filter_name == "hue":
-            processed_image = (adjust_hue(image_path))    
+            processed_image = (adjust_hue(upload_path))    
         elif filter_name == "saturation":
-            processed_image = (adjust_saturation(image_path))    
+            processed_image = (adjust_saturation(upload_path))    
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
