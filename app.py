@@ -133,8 +133,10 @@ async def upload_image(filter_name: str, file: UploadFile = File(...)):
         elif filter_name == "saturation":
             processed_image = (adjust_saturation(image_path))    
         else:
-            return {"error": "Invalid filter name"}
-
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid filter name",
+            )
         # Save the processed image
         processed_filename = f"{filter_name}_{file.filename}"
         processed_path = os.path.join(PROCESSED_FOLDER, processed_filename)
