@@ -7,6 +7,7 @@ import numpy as np
 import os
 from PIL import Image, ImageFilter
 import io
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -148,7 +149,11 @@ async def upload_image(filter_name: str, file: UploadFile = File(...)):
         # processed_image.save(processed_path)
         cv2.imwrite(processed_path,processed_image)
         return {"message": "Upload successful", "filename": file.filename}
+    except HTTPException as e:
+        return JSONResponse(status_code=e.status_code, content={"error": e.detail})
+    # except Exception as e:
+    #     return {"error": str(e)}
     except Exception as e:
-        return {"error": str(e)}
+        return JSONResponse(status_code=400, content={"error": str(e)})
 
 
